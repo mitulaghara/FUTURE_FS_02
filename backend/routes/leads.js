@@ -57,6 +57,44 @@ router.post('/', async (req, res) => {
 // Admin Protected Routes below
 // ==========================================
 
+// @route   POST api/leads/manual
+// @desc    Admin manually adds a new lead from the dashboard
+// @access  Private (Admin JWT)
+router.post('/manual', auth, async (req, res) => {
+  const { name, email, source, status, note } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).json({ message: 'Name and email are required fields' });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ message: 'Please provide a valid email address' });
+  }
+
+  try {
+    const newLead = new Lead({
+      name,
+      email,
+      source: source || 'Manual Entry',
+      status: status || 'New'
+    });
+
+    // Optional initial note from admin
+    if (note && note.trim()) {
+      newLead.notes.push({ content: note.trim() });
+    }
+
+    // System note: manually added by admin
+    newLead.notes.push({ content: 'Lead manually added by admin from dashboard.' });
+
+    await newLead.save();
+    res.status(201).json(newLead);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error creating lead' });
+  }
+});
+
 // @route   GET api/leads
 // @desc    Get all leads with filtering, searching, and sorting
 // @access  Private (Admin)
