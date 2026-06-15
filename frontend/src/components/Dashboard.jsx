@@ -132,6 +132,16 @@ const Dashboard = ({ token, onLogout, onShowDocs, backendUrl }) => {
       const response = await fetch(`${backendUrl}/api/leads?${queryParams}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+
+      // Token expired or invalid — clear and redirect to login
+      if (response.status === 401) {
+        console.warn('Session expired. Logging out...');
+        localStorage.removeItem('crm_token');
+        localStorage.removeItem('crm_user');
+        onLogout();
+        return;
+      }
+
       if (!response.ok) throw new Error('Failed to retrieve leads');
       const data = await response.json();
       setLeads(data);
