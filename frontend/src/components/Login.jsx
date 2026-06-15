@@ -16,7 +16,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
     setSetupMessage('');
     setLoading(true);
 
-    const endpoint = isSetup ? '/api/auth/setup-admin' : '/api/auth/login';
+    const endpoint = isSetup ? '/api/auth/register' : '/api/auth/login';
     const payload = isSetup ? { email, password, name } : { email, password };
 
     try {
@@ -35,7 +35,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
       }
 
       if (isSetup) {
-        setSetupMessage('Admin account created! You can now login.');
+        setSetupMessage('Account created successfully! You can now login.');
         setIsSetup(false);
         setPassword('');
       } else {
@@ -57,7 +57,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
           <div className="nav-brand" style={{ justifyContent: 'center', marginBottom: '0.5rem', fontSize: '2rem' }}>
             CRM Dashboard
           </div>
-          <p>{isSetup ? 'Register the first Admin account' : 'Sign in to access lead management'}</p>
+          <p>{isSetup ? 'Create a new account' : 'Sign in to access lead management'}</p>
         </div>
 
         {error && <div className="login-error">{error}</div>}
@@ -76,7 +76,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
                 <input
                   type="text"
                   className="input-field"
-                  placeholder="Enter admin name"
+                  placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   style={{ paddingLeft: '2.5rem' }}
@@ -93,7 +93,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
               <input
                 type="email"
                 className="input-field"
-                placeholder="admin@example.com"
+                placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{ paddingLeft: '2.5rem' }}
@@ -119,7 +119,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
           </div>
 
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.8rem' }} disabled={loading}>
-            {loading ? 'Processing...' : isSetup ? 'Initialize Admin' : 'Login to Dashboard'}
+            {loading ? 'Processing...' : isSetup ? 'Register' : 'Login to Dashboard'}
             <FiArrowRight style={{ marginLeft: '0.5rem' }} />
           </button>
         </form>
@@ -134,7 +134,7 @@ const Login = ({ onLoginSuccess, backendUrl }) => {
             className="btn btn-secondary btn-sm"
             style={{ border: 'none', background: 'transparent', color: 'var(--primary)' }}
           >
-            {isSetup ? 'Already have an account? Login' : 'First time running the app? Setup Admin'}
+            {isSetup ? 'Already have an account? Login' : 'Don\'t have an account? Register'}
           </button>
         </div>
       </div>

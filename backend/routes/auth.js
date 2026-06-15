@@ -4,10 +4,10 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
-// @route   POST api/auth/setup-admin
-// @desc    Setup first admin account if none exists
+// @route   POST api/auth/register
+// @desc    Register a new user / admin account
 // @access  Public
-router.post('/setup-admin', async (req, res) => {
+router.post('/register', async (req, res) => {
   const { email, password, name } = req.body;
 
   if (!email || !password) {
@@ -15,16 +15,16 @@ router.post('/setup-admin', async (req, res) => {
   }
 
   try {
-    // Check if any admin exists
-    const adminCount = await User.countDocuments();
-    if (adminCount > 0) {
-      return res.status(400).json({ message: 'Admin account already exists. Use login endpoint.' });
+    // Check if user with this email already exists
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User account with this email already exists.' });
     }
 
     const newUser = new User({
       email,
       password,
-      name: name || 'Admin User'
+      name: name || 'User'
     });
 
     await newUser.save();
@@ -37,7 +37,53 @@ router.post('/setup-admin', async (req, res) => {
     );
 
     res.status(201).json({
-      message: 'Admin account created successfully!',
+      message: 'Account created successfully!',
+      token,
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST api/auth/setup-admin
+// @desc    Alias to /register for backwards compatibility
+// @access  Public
+router.post('/setup-admin', async (req, res) => {
+  // Redirect to register endpoint logic
+  const { email, password, name } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Please provide email and password' });
+  }
+
+  try {
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'User account with this email already exists.' });
+    }
+
+    const newUser = new User({
+      email,
+      password,
+      name: name || 'Admin User'
+    });
+
+    await newUser.save();
+
+    const token = jwt.sign(
+      { id: newUser._id, email: newUser.email },
+      process.env.JWT_SECRET || 'lead_crm_dev_secret_jwt_key_987654321',
+      { expiresIn: '24h' }
+    );
+
+    res.status(201).json({
+      message: 'Account created successfully!',
       token,
       user: {
         id: newUser._id,

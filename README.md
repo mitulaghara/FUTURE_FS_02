@@ -2,6 +2,10 @@
 
 A full-stack, modern CRM application to capture, track, and convert website leads. Built with **React**, **Node.js + Express**, and **MongoDB**.
 
+## 🌐 Live URLs
+* **Live Frontend Website**: [https://client-lead-management-system-ten.vercel.app](https://client-lead-management-system-ten.vercel.app)
+* **Live Backend API**: [https://client-lead-management-system-backe.vercel.app](https://client-lead-management-system-backe.vercel.app)
+
 ---
 
 ## ✨ Features
